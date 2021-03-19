@@ -1,0 +1,5 @@
+const paletaDeColores = {
+	
+}
+
+export {paletaDeColores};
