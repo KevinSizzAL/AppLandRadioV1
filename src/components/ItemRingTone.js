@@ -28,8 +28,8 @@ export default class ItemRingTone extends Component {
 
   render() {
     return (
-      <TouchableOpacity onPress={() => {this.props.event(1)}}>
-        <View style={styles.root}>
+      <TouchableOpacity disabled={this.props.config.timed_out } onPress={() => {this.props.event(1)}}>
+        <View style={{...styles.root, opacity:this.props.config.timed_out ? 0.3 : 1}}>
           <Image style={styles.image} source={{uri: this.props.config.albumArtUrl}} />
           <View style={styles.itemGalery}>
             <View style={styles.informationVideo}>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   root: {
     flexDirection: 'row',
     marginTop: 8,
-    backgroundColor: '#FFF'
+    backgroundColor:'#fff'
   },
   image: {
     height: Platform.OS === 'ios' ? 80:65,

@@ -10,7 +10,7 @@ import SideMenu from 'react-native-side-menu';
 import {connect} from 'react-redux';
 import store from './../redux/store';
 import { Ionicons } from '@expo/vector-icons';
-
+import { FontAwesome5 } from '@expo/vector-icons';
 import SideMenuCustomised from './../components/SideMenuCustomised';
 import ItemGalery from './../components/ItemGalery';
 import ItemRingTone from './../components/ItemRingTone';
@@ -143,10 +143,12 @@ class MultimediaView extends Component{
 
     //Brayan: Obtenemos la lista de categorias
     db.collection("ringTones/").get()
-      .then(function(querySnapshot) {
+      .then(async function(querySnapshot) {
+        const month_compare = await (await db.collection('constants').doc('podcast').get()).data().old_podcasts_monts_compare
+        const current_month = new Date().getMonth()
         let list = [];
         querySnapshot.forEach(function(doc) {
-          list.push({selected: false, ...doc.data()});
+          list.push({selected: false, ...doc.data(), timed_out: (current_month - new Date(doc.data().updatedAt).getMonth() >= month_compare)});
         });
         //alert(JSON.stringify(list))
         that.setState({ringTones: list});
@@ -163,7 +165,7 @@ class MultimediaView extends Component{
           <StatusBar barStyle="light-content"/>
           <Header style={COLOR_PALLETE.headerTabs} hasTabs />
           <Tabs tabBarUnderlineStyle={COLOR_PALLETE.tabBarUnderlineStyle}>
-            <Tab  heading={ <TabHeading style={COLOR_PALLETE.headerTabs}><Ionicons style={styles.icon} name="md-photos" /><Text style={styles.text}>Galería</Text></TabHeading>}>
+            <Tab  heading={ <TabHeading style={COLOR_PALLETE.headerTabs}><FontAwesome5 style={styles.icon} name="photo-video" /><Text style={styles.text}>Galería</Text></TabHeading>}>
               <Content style={{height: 1}}>
                 <ScrollView contentContainerStyle={styles.rootImagenes}>
                   {this.renderImageGalery()}
@@ -203,7 +205,7 @@ class MultimediaView extends Component{
                   <VideoPlayer
                     videoProps={{
                       shouldPlay: true,
-                      resizeMode: Video.RESIZE_MODE_CONTAIN,
+                      resizeMode: 'contain',
                       source: {uri: this.state.urlVideoSelected}
                     }}
                     isPortrait={true}

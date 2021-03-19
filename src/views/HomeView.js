@@ -239,11 +239,11 @@ _keyboardDidHide = () => {
         style={styles.audioElement} />
     );
     return (
-        <SideMenu onChange={()=>{
-          // if(!this.state.mostrarSide)
-          //   this.setState({mostrarSide: !this.state.mostrarSide})
-        }} 
-          menu={menu} menuPosition={'left'} isOpen={this.state.mostrarSide}>
+        <SideMenu 
+          menu={menu} 
+          menuPosition={'left'} 
+          bounceBackOnOverdraw={false}
+          isOpen={this.state.mostrarSide}>
           <View style={[styles.background, COLOR_PALLETE.backgroundHome]}>
           <Spinner
             visible={this.state.spinner}
