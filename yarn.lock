@@ -1080,7 +1080,7 @@
   dependencies:
     "@types/hammerjs" "^2.0.36"
 
-"@expo/config-plugins@1.0.21":
+"@expo/config-plugins@^1.0.13", "@expo/config-plugins@~1.0.13", "@expo/config-plugins@1.0.21":
   "integrity" "sha512-sMTF0/lx52ovJPz9iH5l0aKRpPFFtYoAQ+38AYhXI890Sswr1UU4Pq3IA5RMdvtOTkTzNREr21WvEHd7X8D1dA=="
   "resolved" "https://registry.npmjs.org/@expo/config-plugins/-/config-plugins-1.0.21.tgz"
   "version" "1.0.21"
@@ -2150,7 +2150,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@unimodules/core@~6.0.0":
+"@unimodules/core@*", "@unimodules/core@~6.0.0":
   "integrity" "sha512-+KCVh+NjU33lkHOFiRfJZR6dDsSF8zCY1CVARMYJbQ7w1epRsalpKnCK08JoNYHQqkPR79d2zQSWMxd20zBvoA=="
   "resolved" "https://registry.npmjs.org/@unimodules/core/-/core-6.0.0.tgz"
   "version" "6.0.0"
@@ -3792,7 +3792,7 @@
   "resolved" "https://registry.npmjs.org/expo-application/-/expo-application-2.4.1.tgz"
   "version" "2.4.1"
 
-"expo-asset@~8.2.1":
+"expo-asset@*", "expo-asset@~8.2.1":
   "integrity" "sha512-Ckiok7BFB6WjKNifa1b3mx2zGY8DnV2CttSQMTnMd6+0EOx1qOMsZDNkryJVpVOtpAetCdHWd5s9f2CdmosowA=="
   "resolved" "https://registry.npmjs.org/expo-asset/-/expo-asset-8.2.2.tgz"
   "version" "8.2.2"
@@ -3802,6 +3802,15 @@
     "md5-file" "^3.2.3"
     "path-browserify" "^1.0.0"
     "url-parse" "^1.4.4"
+
+"expo-av@^9.0.0":
+  "integrity" "sha512-VAMt/iPNeG33G1ycf2zhlZ+I7Ymuh3FYk9XL85jMrGOn6prW4C1tRp5YczZqgunLd5dzeBhunHCTlZn7WODP6g=="
+  "resolved" "https://registry.npmjs.org/expo-av/-/expo-av-9.0.0.tgz"
+  "version" "9.0.0"
+  dependencies:
+    "@expo/config-plugins" "~1.0.13"
+    "lodash" "^4.17.15"
+    "nullthrows" "^1.1.0"
 
 "expo-constants@~9.3.3":
   "integrity" "sha512-qIlv2ffSjQl3wrvJwXYoNfQNfH/sK46EXcgyEQnQ1SAQO4ukwTEpG9j3fdW6aTiVEVrv/DsA1IaVRqKrUwSd3A=="
@@ -3818,6 +3827,13 @@
   "version" "1.4.0"
   dependencies:
     "fbjs" "1.0.0"
+
+"expo-facebook@^10.0.0":
+  "integrity" "sha512-raVcz4KetJgElaW3zzj37MjvaKdNAM+n9zNtTXEHyIj4Gvj4+dVsQMOt6I7LQS01apR2PuzzWuVX3wG/1njXAQ=="
+  "resolved" "https://registry.npmjs.org/expo-facebook/-/expo-facebook-10.0.0.tgz"
+  "version" "10.0.0"
+  dependencies:
+    "@expo/config-plugins" "^1.0.13"
 
 "expo-file-system@~9.3.0":
   "integrity" "sha512-x83IVep6PVfzGLpzR5fhWgKGlDaF95vfRzvmLyOMnbSuM8gY9a8C92taxZxfitryy9+D46lbRcnxPvBqFkXMNg=="
@@ -5466,7 +5482,7 @@
   "resolved" "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
   "version" "3.10.1"
 
-"lodash@^4.17.13", "lodash@^4.17.14", "lodash@^4.17.15", "lodash@^4.17.19", "lodash@^4.17.4", "lodash@^4.3.0", "lodash@^4.5.0", "lodash@^4.6.0":
+"lodash@^4.17.13", "lodash@^4.17.14", "lodash@^4.17.15", "lodash@^4.17.19", "lodash@^4.17.21", "lodash@^4.17.4", "lodash@^4.3.0", "lodash@^4.5.0", "lodash@^4.6.0":
   "integrity" "sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg=="
   "resolved" "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   "version" "4.17.21"
@@ -8226,7 +8242,7 @@
   "resolved" "https://registry.npmjs.org/unimodules-image-loader-interface/-/unimodules-image-loader-interface-5.4.0.tgz"
   "version" "5.4.0"
 
-"unimodules-permissions-interface@~5.4.0":
+"unimodules-permissions-interface@*", "unimodules-permissions-interface@~5.4.0":
   "integrity" "sha512-mb+uiWvf2M/og7bA28CYOH6uKsAg/7oRBodZNsXVRH/h5LjQlBd5lTECH/L3Hkm3Ta7NSQUnENtXUCO4jfnVkg=="
   "resolved" "https://registry.npmjs.org/unimodules-permissions-interface/-/unimodules-permissions-interface-5.4.0.tgz"
   "version" "5.4.0"

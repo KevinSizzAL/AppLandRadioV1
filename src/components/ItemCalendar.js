@@ -14,8 +14,8 @@ import {
   Dimensions
 } from 'react-native';
 import {Card, CardItem, Body } from 'native-base';
-
-import {COLOR_PALLETE} from './../commons/Color';
+import {getJSON} from '../functions/getJSON'
+import {LOGOS} from '../commons/Color'
 
 export default class ItemCalendar extends Component {
 
@@ -24,6 +24,9 @@ export default class ItemCalendar extends Component {
   }
 
   render() {
+    const {data} = this.props
+    const getJSONInstance = (value='', undefined_response) => getJSON(data, [value], undefined_response)
+    const image = getJSONInstance('image', null) ? {uri: getJSONInstance('image', '') } : LOGOS.primary
     return (
       <TouchableOpacity
         onPress={
@@ -36,11 +39,11 @@ export default class ItemCalendar extends Component {
           <Body>
             <View style={styles.root}>
               <View style={styles.col1}>
-                <Image style={styles.image} source={{uri: this.props.data.image}}/>
+                <Image style={styles.image} source={image}/>
               </View>
               <View style={styles.col2}>
-                <Text style={styles.title}>{this.props.data.title}</Text>
-                <Text style={styles.time}>{this.props.data.startTime} - {this.props.data.endTime}</Text>
+                <Text style={styles.title}>{getJSONInstance('title', 'Sin título del programa')}</Text>
+                <Text style={styles.time}>{getJSONInstance('startTime', '00')} - {getJSONInstance('endTime', '00')}</Text>
               </View>
             </View>
           </Body>

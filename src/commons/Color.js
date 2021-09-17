@@ -50,7 +50,8 @@ const COLOR_PALLETE = StyleSheet.create({
   //View: Home
   backgroundHome: {
     //backgroundColor: '#ffcc0e',
-    backgroundColor: '#000'
+    backgroundColor: '#606e8b'
+    //backgroundColor: '#000'
   },
   colorIconSideMenu: {
     //color: '#000',

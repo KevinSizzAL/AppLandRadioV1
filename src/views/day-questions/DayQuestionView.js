@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import SideMenu from 'react-native-side-menu';
 import {connect} from 'react-redux';
 import store from './../../redux/store';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import SideMenuCustomised from './../../components/SideMenuCustomised';
 import {Actions} from 'react-native-router-flux';
 import { Container, Header, Content, Tab, Tabs, TabHeading, Card, CardItem, Body } from 'native-base';
@@ -256,7 +256,7 @@ class DayQuestionView extends Component{
                 </View>
               </Content>
             </Tab>
-            <Tab heading={ <TabHeading style={COLOR_PALLETE.headerTabs}><Ionicons style={styles.icon} name="md-contacts" /><Text style={styles.text}>Temas propuestos</Text></TabHeading>}>
+            <Tab heading={ <TabHeading style={COLOR_PALLETE.headerTabs}><FontAwesome5 style={styles.icon} name="users" /><Text style={styles.text}>Temas propuestos</Text></TabHeading>}>
               <Content style={{height: 1}}>
                 {this.renderProposedQuestion()}
               </Content>

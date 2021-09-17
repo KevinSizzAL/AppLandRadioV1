@@ -5,13 +5,17 @@
  */
 
 import React, { Component } from 'react';
-import {Router, Scene, Stack, Actions, Modal} from 'react-native-router-flux';
+import {Router, Scene, Stack, Actions, Modal, ActionConst} from 'react-native-router-flux';
 import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
+  Platform,
+  Alert
 } from 'react-native';
 import {connect} from 'react-redux';
+import { Container, Header, Content, Tab, Tabs, TabHeading, Card, CardItem, Body } from 'native-base';
 
 import {COLOR_PALLETE} from './commons/Color';
 import HomeView from './views/HomeView';
@@ -30,6 +34,9 @@ import RemindersView from './views/RemindersView';
 import LoginView from './views/LoginView';
 import AskMusic from './views/ask-music/AskMusic';
 import CustomPlayer from './components/player-components/CustomPlayer';
+import TransmissionDetails from './views/TransmissionDetails'
+import PopupDialog, { SlideAnimation, DialogButton } from 'react-native-popup-dialog';
+import { firebaseAuth, db } from './commons/FirebaseConection';
 
 
 mapStateToProps = (state)=>{
@@ -38,40 +45,141 @@ mapStateToProps = (state)=>{
   }
 }
 
-const TRACKS = [
-  {
-    title: 'Maroon 5',
-    artist: 'Twenty One Pilots',
-    albumArtUrl: "http://36.media.tumblr.com/14e9a12cd4dca7a3c3c4fe178b607d27/tumblr_nlott6SmIh1ta3rfmo1_1280.jpg",
-    audioUrl: "https://firebasestorage.googleapis.com/v0/b/radio-hit.appspot.com/o/ringTones%2FMaroon%205%20-%20Girls%20Like%20You%20ft.%20Cardi%20B.mp3?alt=media&token=a1d730fe-3524-411d-96ea-420b1262bd9f",
-  },
-  {
-    title: 'Love Yourself',
-    artist: 'Justin Bieber',
-    albumArtUrl: "http://arrestedmotion.com/wp-content/uploads/2015/10/JB_Purpose-digital-deluxe-album-cover_lr.jpg",
-    audioUrl: 'https://firebasestorage.googleapis.com/v0/b/radio-hit.appspot.com/o/ringTones%2FMaroon%205%20-%20Girls%20Like%20You%20ft.%20Cardi%20B.mp3?alt=media&token=a1d730fe-3524-411d-96ea-420b1262bd9f',
-  },
-  {
-    title: 'Hotline Bling',
-    artist: 'Drake',
-    albumArtUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Drake_-_Hotline_Bling.png',
-    audioUrl: 'https://firebasestorage.googleapis.com/v0/b/radio-hit.appspot.com/o/ringTones%2FMaroon%205%20-%20Girls%20Like%20You%20ft.%20Cardi%20B.mp3?alt=media&token=a1d730fe-3524-411d-96ea-420b1262bd9f',
-  },
-];
+
+const QuestionDialog = ({open=true, onCloseDialog=()=>{}, options={}, question, correct_answer}) => {
+  const slideAnimation = new SlideAnimation({
+    slideFrom: 'bottom',
+  });
+  const [selected, setSelected] = React.useState(null)
+  // const [count, setCount] = React.useState(40)
+  // const [trigger, setTrigger] = React.useState(false)
+  // let interval = setInterval(()=>{setTrigger(!trigger)}, 3500)
+  // React.useEffect(()=>{
+  //   if(count!==0) setCount(count-1)
+  //   else {clearInterval(interval) ;onCloseDialog()}
+  // },[trigger])
+  // if(count === 0) onCloseDialog()
+  const onSendAnswer = (answered_well=false) => {
+    setSelected(null)
+    const registerAnswerError = () => {Alert.alert('Error', 'Parece que hubo un error al registrar tu respuesta'); onCloseDialog()}
+    firebaseAuth.onAuthStateChanged(({isAnonymous, uid})=>{
+      if(uid){
+        db
+        .collection('/questionComments/DailyQuestions/usersAnswered')
+        .add({
+          uid,
+          answered_well,
+          isAnonymous,
+          date: +new Date()
+        })
+        .then(()=>{onCloseDialog()})
+        .catch(()=>{registerAnswerError()})
+        onCloseDialog()
+      }else{
+        registerAnswerError()
+      }
+    })
+  }
+  const onSendPress = () => {
+    if(!selected) return Alert.alert('Encuenta diaria', 'Debes seleccionar una opción')
+    if(selected === correct_answer){
+      onSendAnswer(true)
+      Alert.alert('Bien', 'Has acertado correctamente, eres uno de los participantes del sorteo')
+    }else{
+      onSendAnswer(false)
+      Alert.alert('Oh oh', 'Parece que no has acertado la respuesta correcta, sigue intentando con los programas diarios')
+    }
+  }
+  return(
+    <PopupDialog 
+      visible={open}
+      width={0.75}
+      height={355}
+      overlayOpacity={0.5}
+      dialogAnimation={slideAnimation}
+      onPress={()=> {alert('Hola mundo')}} >
+        <View>
+          <Text style={{textAlign:'center', fontSize:20, fontWeight:'bold', marginTop:'4%', marginHorizontal:10}} >{question}</Text>
+          <View style={{justifyContent:'space-between'}} >
+            <View>
+              {options.map((value, index)=>{
+                return(
+                  <TouchableOpacity onPress={()=>setSelected(value.option)} key={index.toString()} style={{flexDirection:'row', marginTop:8,justifyContent:'space-between', alignSelf:'flex-start', marginHorizontal:6}} >
+                    <View style={{...styles.root,backgroundColor:selected === value.option ? '#f48a1f' : '#dfdfdf'}} ><Text style={styles.name} >{value.option}</Text></View>
+                    <Text style={styles.text} >{value.text}</Text>
+                  </TouchableOpacity>
+                )
+              })}
+            </View>
+            <View style={{ width:'85%', alignSelf:'center', height:50, marginTop:20}} >
+              <View style={{flexDirection:'row', justifyContent:'space-between',flex:1}} >
+                <TouchableOpacity onPress={()=>onCloseDialog()} style={styles.optionButton} >
+                  <Text style={{fontSize:15, color:'red', alignSelf:'center'}} >Cerrar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={()=>onSendPress()} style={styles.optionButton} >
+                <Text style={{fontSize:15, color:'green', alignSelf:'center'}} >Enviar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          {/* <Text style={{alignSelf:'center'}} >Tempo restante: {count} segundos</Text> */}
+        </View>
+    </PopupDialog>
+  )
+}
 
 class Config extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      mostrarSide: false
+      mostrarSide: false,
+      dailiQuestionPopup: false,
+      dailyQuestionData:{
+        options:[],
+        correct_answer:'',
+        question:'',
+      }
     }
   }
 
+  componentDidMount(){
+    // Obtener la pregunta diaria
+    db
+    .collection('/questionComments')
+    .doc('DailyQuestions')
+    .onSnapshot(snapshot => {
+      firebaseAuth.onAuthStateChanged(({isAnonymous, uid}) => {
+        if(uid){
+          db
+          .collection('/questionComments/DailyQuestions/usersAnswered')
+          .where('uid', '==', `${uid}`)
+          .get()
+          .then(data => {
+            // se verifica que el usuario no haya respondido antes para abrir el popup de pregunta diaria
+            if(data.docs.length === 0){
+              this.setState({dailyQuestionData: snapshot.data(), dailiQuestionPopup:true})
+            }
+          })
+          .catch(err => {console.log('in Catch', err);})
+        }
+      })
+    })
+    // Setear la conexión del usuario, para saber su iuntervalo de conexión
+    // db
+    // .collection()
+  }
 
   render() {
-    const menu = <View><Text>Hola mundo</Text></View>;
+    const {correct_answer, options, question} = this.state.dailyQuestionData
     return (
+      <>
+      <QuestionDialog 
+        onCloseDialog={()=>this.setState({dailiQuestionPopup:false})}
+        correct_answer={correct_answer}
+        options={options}
+        question={question}
+        open={this.state.dailiQuestionPopup} />
       <Router>
         <Modal hideNavBar>
             <Stack key="root">
@@ -80,6 +188,15 @@ class Config extends Component {
                 component={HomeView}
                 navTransparent={true}
                 hideNavBar={true}
+              />
+              <Scene 
+                key="detalleDeTransmision" 
+                component={TransmissionDetails}
+                title="Detalle de transmisión"
+                titleStyle={styles.whiteColor}
+                headerTintColor="#FFF"
+                navigationBarStyle={COLOR_PALLETE.headerTabs}
+                navTransparent={true}
               />
               <Scene 
                 key="multimedia" 
@@ -170,6 +287,7 @@ class Config extends Component {
             <Scene key="player" component={CustomPlayer} hideNavBar />
           </Modal>
         </Router>
+      </>
     );
   }
 }
@@ -181,6 +299,31 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 35,
     marginLeft: 15,
+  },
+  name: {
+    fontSize: Platform.OS === 'ios' ? 24:20,
+    alignSelf: 'center'
+  },
+  root: {
+    height: Platform.OS === 'ios' ? 48:42,
+    width: Platform.OS === 'ios' ? 48:42,
+    borderRadius: Platform.OS === 'ios' ? 24:21,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10
+  },
+  text:{
+    fontSize: Platform.OS === 'ios' ? 22:18,
+    textAlignVertical:'center',
+    marginLeft:7
+  },
+  optionButton:{
+    width:'45%', 
+    height:'70%', 
+    borderWidth:1, 
+    borderColor:'#aaa', 
+    borderRadius:4,
+    justifyContent:'center'
   }
 });
 

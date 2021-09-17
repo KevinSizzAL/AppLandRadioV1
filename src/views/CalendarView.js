@@ -30,8 +30,10 @@ import {
   Image,
   StatusBar,
   Modal,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 
 mapStateToProps = (state)=>{
   return{
@@ -55,48 +57,56 @@ class CalendarView extends Component{
       radioProgramming: [],
       transmissionSelected: {
         startTime: '',
-        endTime: ''
+        endTime: '',
+        broadcasters:[]
       }
     }
   }
 
   selectTransmissionSelected = (transmission) => {
-    this.setState({transmissionSelected: transmission});
-    this.state.popupDialog.show();
+    Actions.detalleDeTransmision({transmission})
   }
 
-  componentWillMount = () =>{
-    let that = this;
+  componentDidMount(){
     //Brayan: Obtenemos la lista de categorias
-    db.collection("radioProgramming/").get()
-      .then(function(querySnapshot) {
-        let list = [];
-        querySnapshot.forEach(function(doc) {
-          list.push({selected: false, ...doc.data()});
-        });
-        that.setState({radioProgramming: list});
-      })
-      .catch(function(error) {
-          alert('Ha ocurrido un error, intentelo mas tarde')
+    db
+    .collection("radioProgrammingMaps/").
+    get()
+    .then(async(querySnapshot) => {
+      let list = []
+      querySnapshot.forEach(async(doc) => {
+        list.push({selected: false, ...doc.data()});
       });
+      this.setState({radioProgramming: list})
+    })
+    .catch(function(error) {
+      console.log('Error', error);
+      alert('Ha ocurrido un error, intentelo mas tarde')
+    });
   }
 
-  transmissionRender(index){
+  transmissionRender= (index=0) =>{
     let response = [];
-    if(this.state.radioProgramming.length >= (index + 1)){
-      for(let i = 0; i<this.state.radioProgramming[index].transmissions.length; i++){
-        response.push(<ItemCalendar data={this.state.radioProgramming[index].transmissions[i]} event={this.selectTransmissionSelected}/>);
+    if(this.state.radioProgramming){
+      if(this.state.radioProgramming && this.state.radioProgramming.length >= (index + 1)){
+        const radio_programming = this.state.radioProgramming[index]
+        if(radio_programming.transmissions1 && radio_programming.transmissions1.length > 0){
+          radio_programming.transmissions1.forEach((value, index) => {
+            response.push(<ItemCalendar event={this.selectTransmissionSelected} key={index.toString()} data={value} />)
+          });
+        }
       }
     }
-    return response;
+    return response.length > 0 ? response : <ActivityIndicator color={'blue'} size={60} style={{alignSelf:'center', marginTop:60}} />;
   }
 
-  journalistRender(){
+  journalistRender = () => {
     let response = [];
-    if(this.state.transmissionSelected.broadcasters){
-      for(let i = 0; i<this.state.transmissionSelected.broadcasters.length; i++){
+    //return
+    if(this.state.radioProgramming && this.state.transmissionSelected.broadcasters){
+      /*for(let i = 0; i<this.state.transmissionSelected.broadcasters.length; i++){
         response.push(<Journalist data={this.state.transmissionSelected.broadcasters[i]}/>);
-      }
+      }*/
     }
     return response;
   }

@@ -41,11 +41,12 @@ export default class Question extends Component {
     let that = this;
     //Obtenemos el ID del usuario logueado
     firebaseAuth.onAuthStateChanged(user => {
+      console.log('user->', user, this.props.config);
       if(user){
         //this.props.config.userId = user.uid;
         Actions.comentarios({userId: user.uid, ...this.props.config});
       } else {
-        Actions.loginModal();
+        Actions.loginModal({prevKey:'temaDelDia'});
       }
     })
     //Actions.loginModal(this.props.config);

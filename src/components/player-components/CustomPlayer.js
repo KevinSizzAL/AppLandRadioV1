@@ -9,8 +9,8 @@ import AlbumArt from './AlbumArt';
 import TrackDetails from './TrackDetails';
 import SeekBar from './SeekBar';
 import Controls from './Controls';
-import { Video } from 'expo';
-import VideoPlayer from '@expo/videoplayer';
+import { Video } from 'expo-av';
+// import VideoPlayer from '@expo/videoplayer';
 
 export default class CustomPlayer extends Component {
   constructor(props) {
@@ -27,8 +27,9 @@ export default class CustomPlayer extends Component {
   }
 
   componentWillMount = () => {
-    console.warn(this.props.navigation.state.params);
-    this.setState({paused: true, selectedTrack: this.props.navigation.state.params.index})
+    // console.warn(this.props.navigation.state.params);
+    // this.setState({paused: true, selectedTrack: this.props.navigation.state.params.index})
+    this.setState({paused: true, selectedTrack: this.props.index})
   }
 
   setDuration(data) {
@@ -70,7 +71,8 @@ export default class CustomPlayer extends Component {
   }
 
   onForward() {
-    if (this.state.selectedTrack < this.props.navigation.state.params.ringTones.length - 1) {
+    // this.props.navigation.state.params.ringTones.length - 1
+    if (this.state.selectedTrack < this.props.ringTones.length - 1) {
       //this.refs.audioElement && this.refs.audioElement.seek(0);
       this.setState({ isChanging: true});
       setTimeout(() => this.setState({
@@ -84,7 +86,8 @@ export default class CustomPlayer extends Component {
   }
 
   render() {
-    const track = this.props.navigation.state.params.ringTones[this.state.selectedTrack];
+    // const track = this.props.navigation.state.params.ringTones[this.state.selectedTrack];
+    const track = this.props.ringTones[this.state.selectedTrack];
     const video = this.state.isChanging ? null : (
       <Video source={{uri: track.audioUrl}} // Can be a URL or a local file.
         ref="audioElement"
@@ -109,7 +112,7 @@ export default class CustomPlayer extends Component {
           onPressRepeat={() => this.setState({repeatOn : !this.state.repeatOn})}
           repeatOn={this.state.repeatOn}
           shuffleOn={this.state.shuffleOn}
-          forwardDisabled={this.state.selectedTrack === this.props.navigation.state.params.ringTones.length - 1}
+          forwardDisabled={this.state.selectedTrack === this.props.ringTones.length - 1 /* this.props.navigation.state.params.ringTones.length - 1 */}
           onPressShuffle={() => this.setState({shuffleOn: !this.state.shuffleOn})}
           onPressPlay={() => this.setState({paused: false})}
           onPressPause={() => this.setState({paused: true})}

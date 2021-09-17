@@ -34,7 +34,7 @@ export default class SideMenuCustomised extends Component {
           }
         },
         {
-          titulo: 'Su opinión cuenta',
+          titulo: 'Tu opinión cuenta',
           icono: 'md-chatbubbles',
           action: () => {
             this.props.config.openPopupDialog();

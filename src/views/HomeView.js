@@ -20,7 +20,7 @@ import {COLOR_PALLETE, LOGOS} from './../commons/Color';
 import Button from 'apsl-react-native-button';
 import ControlPlayer from './../components/ControlPlayer';
 import Player from 'react-native-streaming-audio-player';
-import { Video } from 'expo';
+import { Video } from 'expo-av';
 import VideoPlayer from '@expo/videoplayer';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -242,6 +242,7 @@ _keyboardDidHide = () => {
         <SideMenu 
           menu={menu} 
           menuPosition={'left'} 
+          
           bounceBackOnOverdraw={false}
           isOpen={this.state.mostrarSide}>
           <View style={[styles.background, COLOR_PALLETE.backgroundHome]}>

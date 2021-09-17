@@ -7,7 +7,8 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import store from './../redux/store';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import * as Facebook from 'expo-facebook';
 
 import {COLOR_PALLETE} from './../commons/Color';
 import {Actions} from 'react-native-router-flux';
@@ -33,7 +34,8 @@ const slideAnimation = new SlideAnimation({
   slideFrom: 'bottom',
 });
 
-const elementCode = null;//Constante que almacenarà el codigo del elemento que fue presionado anteriormente
+let elementCode = null;//Constante que almacenarà el codigo del elemento que fue presionado anteriormente
+let previousKey = null;//Constante que guarda la ruta anterior de navegación
 
 const setShowSpinner = (value) => {
   this.setState({showSpinner:  value});
@@ -50,7 +52,7 @@ class LoginView extends Component{
   constructor(){
     super();
     this.state = {
-      popupDialog: undefined,
+      popupDialog: false,
       showSpinner: false,
       nickName: undefined
     }
@@ -63,6 +65,8 @@ class LoginView extends Component{
 
   componentWillMount = () =>{
     elementCode = this.props.navigation.state.params.code;
+    previousKey = this.props.prevKey;
+    console.log('Element code', elementCode);
   }
 
   addUserToDataBase = (userId, name, photo, auth) => {
@@ -77,8 +81,8 @@ class LoginView extends Component{
     .then(() => {
       this.setState({showSpinner: false});
       //Actions.pop();
-      if(userId && elementCode)
-        Actions.comentarios({code: elementCode, userId: userId});
+      if(userId && elementCode) Actions.comentarios({code: elementCode, userId: userId});
+      if(previousKey) Actions.popTo(previousKey)
     })
     .catch(function(error) {
       Alert.alert(
@@ -90,9 +94,8 @@ class LoginView extends Component{
 
   //Brayan: Funcion que nos permite autenticarnos con Facebook
   facebookAuth = async () => {
-    let that = this;
-    const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync('1938036172948601', {
-      permissions: ['public_profile'], behavior: 'native'
+    const { type, token } = await Facebook.logInWithReadPermissionsAsync('1938036172948601', {
+      permissions: ['public_profile'], /* behavior: 'native' */
     });
     if (type === 'success') {
       this.setState({showSpinner: true});
@@ -106,15 +109,17 @@ class LoginView extends Component{
   }
 
   anonymousAuth = () => {
-    console.warn(this.state.nickName);
+    console.log(this.state.nickName);
     if(this.state.nickName){
       firebaseAuth.signInAnonymously()
       .then((resp) => {
         //alert(JSON.stringify(user))
+        this.setState({popupDialog:false})
         this.addUserToDataBase(resp.user.uid, this.state.nickName, null, 'anonymous');
       })
       .catch((error) => {
-
+        this.setState({popupDialog:false})
+        Alert.alert('Error', 'Parece que hubo un error al registrar el usuario')
       });
     } else {
       Alert.alert(
@@ -158,10 +163,10 @@ class LoginView extends Component{
                 </View>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{this.state.popupDialog.show();}}>
+            <TouchableOpacity onPress={()=>{this.setState({popupDialog:true})}}>
               <View style={[styles.socialBtn, styles.twitterBtn]}>
                 <View style={styles.layoutBtn}>
-                  <Ionicons style={styles.iconBtn} name="md-contact" />
+                  <FontAwesome5 style={styles.iconBtn} name="users" />
                   <Text style={styles.lblBtn}>Anónimo</Text>
                 </View>
               </View>
@@ -172,16 +177,16 @@ class LoginView extends Component{
         <PopupDialog
             width={0.75}
             height={340}
-            ref={(popupDialog) => { this.state.popupDialog = popupDialog; }}
+            visible={this.state.popupDialog}
             dialogAnimation={slideAnimation}
             onPress={()=> {alert('Hola mundo')}}
           >
                 <View style={styles.popup}>
-                  <View style={styles.closePopup}><TouchableOpacity onPress={()=> {this.state.popupDialog.dismiss()}}><Ionicons name="md-close" style={styles.closeIcon} /></TouchableOpacity></View>
+                  <View style={styles.closePopup}><TouchableOpacity onPress={()=> {this.setState({popupDialog:false})}}><Ionicons name="md-close" style={styles.closeIcon} /></TouchableOpacity></View>
                   <ScrollView>
                     <View style={styles.headerPopup}>
                       <View style={[styles.circle, COLOR_PALLETE.sideMenu]}>
-                        <Ionicons style={styles.iconPopup} name="md-contact" />
+                        <FontAwesome5 style={styles.iconPopup} name="user" />
                       </View>
                       <View style={styles.informationPopup}>
                         <Text style={styles.titlePopup}>Anónimo</Text>
@@ -190,17 +195,15 @@ class LoginView extends Component{
                       <TextInput
                         style={styles.input}
                         placeholder="Ingresar Nickname"
-                        multiline={true}
-                        numberOfLines={4}
                         underlineColorAndroid='#FFF'
-                        onChangeText={(text) => this.setState({nickName: text})}
+                        onChangeText={(nickName)=>this.setState({nickName})}
                         value={this.state.nickName}
                       />
                     </View>
                   </ScrollView>
                   <View style={styles.layoutButtons}>
                     <View style={styles.colButton}>
-                      <Button style={styles.btnPopup} textStyle={styles.lblButtonPopup}>
+                      <Button onPress={()=>this.setState({popupDialog:false})} style={styles.btnPopup} textStyle={styles.lblButtonPopup}>
                         Cancelar
                       </Button>
                     </View>

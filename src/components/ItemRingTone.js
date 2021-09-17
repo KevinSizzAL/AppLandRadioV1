@@ -11,14 +11,10 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Dimensions,
   Platform
 } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
-
-import {COLOR_PALLETE} from './../commons/Color';
-import {Actions} from 'react-native-router-flux';
 
 export default class ItemRingTone extends Component {
 
